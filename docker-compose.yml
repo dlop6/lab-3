@@ -1,8 +1,8 @@
-version: '3.9'
-
+version: '3.8'
 services:
   db:
     image: postgres:15
+    container_name: lab3-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -11,11 +11,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
-      - ./data.sql:/docker-entrypoint-initdb.d/data.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/02-data.sql
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lab3-app
     depends_on:
       - db
     environment:
@@ -23,9 +26,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: lab3
       DB_HOST: db
-    volumes:
-      - .:/app
-    command: ["./scripts/wait-for-db.sh", "db", "python3", "models.py"]
+    command: ["sh", "-c", "./scripts/wait-for-db.sh db python3 models.py"]
 
 volumes:
   postgres_data:

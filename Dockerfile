@@ -1,24 +1,20 @@
-# Usa la imagen base de Python 3.10 con Alpine Linux
 FROM python:3.10-alpine
 
-# Actualiza los paquetes e instala el cliente de PostgreSQL y bash
+# Instala cliente Postgres, bash y dos2unix
 RUN apk update \
  && apk add --no-cache \
       postgresql-client \
-      bash
+      bash \
+      dos2unix
 
-# Establece el directorio de trabajo en /app
 WORKDIR /app
 
-# Copia el archivo de dependencias
 COPY requirements.txt .
-# Instala las dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia el resto de los archivos al contenedor
+# Copia todo el código y convierte el script a Unix line endings
 COPY . .
-# Da permisos de ejecución al script de espera de la base de datos
-RUN chmod +x scripts/wait-for-db.sh
+RUN dos2unix scripts/wait-for-db.sh \
+ && chmod +x scripts/wait-for-db.sh
 
-# Comando por defecto: espera a la base de datos y luego ejecuta models.py
 CMD ["./scripts/wait-for-db.sh", "db", "python3", "models.py"]
