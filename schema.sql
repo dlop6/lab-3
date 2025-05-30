@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS libro_autor (
     PRIMARY KEY (libro_id, autor_id)
 );
 
--- Vista para libros con autores y género
+-- 03-view.sql
 CREATE OR REPLACE VIEW vista_libros_autores AS
 SELECT
     l.id AS libro_id,
