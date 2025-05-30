@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   db:
     image: postgres:15
@@ -23,7 +25,7 @@ services:
       DB_HOST: db
     volumes:
       - .:/app
-    command: ["./scripts/wait-for-db.sh", "db", "python", "models.py"]
+    command: ["./scripts/wait-for-db.sh", "db", "python3", "models.py"]
 
 volumes:
   postgres_data:

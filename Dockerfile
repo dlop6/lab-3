@@ -1,24 +1,24 @@
-# Dockerfile (Alpine-based, sin apt ni sources list)
-
-# 1) Partimos de Python 3.10 Alpine
+# Usa la imagen base de Python 3.10 con Alpine Linux
 FROM python:3.10-alpine
 
-# 2) Instalamos el cliente psql y bash (necesario para tu script)
+# Actualiza los paquetes e instala el cliente de PostgreSQL y bash
 RUN apk update \
  && apk add --no-cache \
       postgresql-client \
       bash
 
-# 3) Directorio de trabajo
+# Establece el directorio de trabajo en /app
 WORKDIR /app
 
-# 4) Copiamos e instalamos dependencias Python
+# Copia el archivo de dependencias
 COPY requirements.txt .
+# Instala las dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5) Copiamos todo el código y damos permiso de ejecución al script
+# Copia el resto de los archivos al contenedor
 COPY . .
+# Da permisos de ejecución al script de espera de la base de datos
 RUN chmod +x scripts/wait-for-db.sh
 
-# 6) Comando por defecto: espera a DB y crea tablas
-CMD ["./scripts/wait-for-db.sh", "db", "python", "models.py"]
+# Comando por defecto: espera a la base de datos y luego ejecuta models.py
+CMD ["./scripts/wait-for-db.sh", "db", "python3", "models.py"]
